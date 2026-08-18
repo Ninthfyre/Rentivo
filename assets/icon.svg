@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">RentFlow icon</title>
+  <desc id="desc">Stylized R monogram for the RentFlow property management app.</desc>
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#7c8cff"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="#0b1220"/>
+  <rect x="28" y="28" width="200" height="200" rx="36" fill="url(#g1)"/>
+  <path d="M82 72h42c35 0 54 18 54 48 0 18-9 30-24 38l26 38h-38l-24-34h-11v34H82V72zm36 30h6c13 0 21-5 21-17 0-10-8-15-21-15h-6v32z" fill="#f8fafc"/>
+</svg>

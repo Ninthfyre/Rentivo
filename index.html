@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RentFlow | Tenant Management</title>
+    <meta
+      name="description"
+      content="Premium tenant management dashboard for landlords and property administrators."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#5b6cf5" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="apple-touch-icon" href="assets/icon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-loader" id="appLoader" aria-live="polite">
+      <div class="loader-orb"></div>
+      <div class="loader-content">
+        <div class="brand-mark loader-brand">R</div>
+        <h2>RentFlow</h2>
+        <p>Loading portfolio dashboard...</p>
+        <div class="loader-bar"><span></span></div>
+      </div>
+    </div>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-wrap">
+          <div class="brand-mark">R</div>
+          <div>
+            <p class="brand-name">RentFlow</p>
+            <span class="brand-subtitle">Tenant management</span>
+          </div>
+        </div>
+
+        <button class="hamburger-menu" id="hamburgerMenu" aria-label="Toggle menu" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <nav class="main-nav" aria-label="Main navigation" id="mainNav">
+          <button class="mobile-menu-close" id="mobileMenuClose" type="button" aria-label="Close menu">✕</button>
+          <button class="nav-item active" data-section="overview">Overview</button>
+          <button class="nav-item" data-section="tenants">Tenants</button>
+          <button class="nav-item" data-section="properties">Properties</button>
+          <button class="nav-item" data-section="payments">Payments</button>
+          <button class="nav-item" data-section="calendar">Calendar</button>
+          <button class="nav-item" data-section="receipts">Receipts</button>
+          <button class="nav-item" data-section="settings">Settings</button>
+          <button class="nav-item install-btn hidden" id="installAppBtn">📱 Install app</button>
+        </nav>
+
+        <div class="toolbar">
+          <button class="icon-btn notification-btn" id="notificationBell" aria-label="Payment notifications">
+            <span>🔔</span>
+            <span class="notif-count hidden" id="notificationCount">0</span>
+          </button>
+          <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">☀️</button>
+          <button class="primary-btn" id="quickAddTenant">+ Add</button>
+        </div>
+      </header>
+
+      <aside class="notification-panel hidden" id="notificationPanel" aria-live="polite">
+        <div class="notification-header">
+          <div>
+            <p class="eyebrow">Alerts</p>
+            <h3>Payment reminders</h3>
+          </div>
+          <button class="icon-btn close-modal" data-close="notificationPanel">✕</button>
+        </div>
+        <div id="notificationList" class="notifications-list"></div>
+      </aside>
+
+      <main class="main-content">
+        <section class="page active" id="overview-section">
+          <div class="dashboard-hero">
+            <div class="hero-copy">
+              <p class="eyebrow">Portfolio overview</p>
+              <h2>Rent performance at a glance</h2>
+              <p class="hero-subtitle">Keep occupancy, rent collection, and property health in sync with a stylish command center built for property teams.</p>
+              <div class="hero-actions">
+                <button class="primary-btn" id="quickRecordPayment">Record payment</button>
+                <button class="secondary-btn" id="openPropertyModal">Add property</button>
+              </div>
+            </div>
+
+            <div class="hero-visual" aria-label="Property portfolio illustration">
+              <div class="visual-photo">
+                <img src="https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=900&q=80" alt="Modern apartment building" />
+              </div>
+              <div class="floating-panel pulse-card">
+                <span class="mini-label">Occupancy</span>
+                <strong>92%</strong>
+                <small>+8% month over month</small>
+              </div>
+              <div class="floating-panel revenue-card">
+                <span class="mini-label">Cash flow</span>
+                <strong>₹2.7L</strong>
+                <small>Collected this month</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-grid" id="overviewStats"></div>
+
+          <div class="overview-grid">
+            <div class="panel large-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Rent overview</p>
+                  <h3>Collected vs pending</h3>
+                </div>
+              </div>
+              <div class="financial-overview" id="rentOverview"></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Upcoming dues</p>
+                  <h3>Next payments</h3>
+                </div>
+              </div>
+              <div class="due-list" id="upcomingDues"></div>
+            </div>
+          </div>
+
+          <div class="lower-grid">
+            <div class="panel">
+              <div class="panel-header compact-header">
+                <div>
+                  <p class="eyebrow">Recent payments</p>
+                  <h3>Latest activity</h3>
+                </div>
+              </div>
+              <div class="list-stack" id="recentPaymentsList"></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header compact-header">
+                <div>
+                  <p class="eyebrow">Recent tenants</p>
+                  <h3>New additions</h3>
+                </div>
+              </div>
+              <div class="list-stack" id="recentTenantsList"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="tenants-section">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">Tenants</p>
+              <h2>Resident profiles</h2>
+            </div>
+            <button class="primary-btn" id="openTenantModal">Add tenant</button>
+          </div>
+
+          <div class="section-hero">
+            <div class="section-copy">
+              <p class="eyebrow">People & occupancy</p>
+              <h3>Track residents, stay history, and contact details in one place.</h3>
+            </div>
+            <div class="section-visual">
+              <img src="https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=900&q=80" alt="Happy property residents" />
+            </div>
+          </div>
+
+          <div class="toolbar-panel">
+            <div class="search-wrap">
+              <span>⌕</span>
+              <input id="tenantSearch" type="search" placeholder="Search tenants, property, phone..." />
+            </div>
+            <select id="tenantStatusFilter">
+              <option value="all">All statuses</option>
+              <option value="Paid">Paid</option>
+              <option value="Upcoming">Upcoming</option>
+              <option value="Due Today">Due Today</option>
+              <option value="Overdue">Overdue</option>
+            </select>
+          </div>
+
+          <div id="tenantList" class="tenant-grid"></div>
+        </section>
+
+        <section class="page" id="properties-section">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">Properties</p>
+              <h2>Property inventory</h2>
+            </div>
+            <button class="primary-btn" id="openPropertyModalFromProperties">Add property</button>
+          </div>
+
+          <div class="section-hero">
+            <div class="section-copy">
+              <p class="eyebrow">Portfolio assets</p>
+              <h3>Manage every home, unit, and rental asset with clarity.</h3>
+            </div>
+            <div class="section-visual">
+              <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=80" alt="Modern residential buildings" />
+            </div>
+          </div>
+
+          <div id="propertyList" class="property-grid"></div>
+        </section>
+
+        <section class="page" id="payments-section">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">Payments</p>
+              <h2>Payment ledger</h2>
+            </div>
+            <button class="primary-btn" id="openPaymentModal">Record payment</button>
+          </div>
+
+          <div class="section-hero">
+            <div class="section-copy">
+              <p class="eyebrow">Transactions</p>
+              <h3>Monitor every rent inflow and keep cashflow organized.</h3>
+            </div>
+            <div class="section-visual">
+              <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=900&q=80" alt="Payment and finance dashboard" />
+            </div>
+          </div>
+
+          <div class="table-panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tenant</th>
+                    <th>Month</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Date</th>
+                    <th>Receipt</th>
+                  </tr>
+                </thead>
+                <tbody id="paymentsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="calendar-section">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">Rent calendar</p>
+              <h2>Due tracking</h2>
+            </div>
+          </div>
+
+          <div class="section-hero">
+            <div class="section-copy">
+              <p class="eyebrow">Scheduling</p>
+              <h3>See rent due dates and upcoming actions on a clean calendar view.</h3>
+            </div>
+            <div class="section-visual">
+              <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80" alt="Calendar and schedule planning" />
+            </div>
+          </div>
+
+          <div class="calendar-layout">
+            <div class="panel calendar-panel">
+              <div class="calendar-topbar">
+                <button class="icon-btn" id="prevMonth">←</button>
+                <h3 id="calendarMonthLabel"></h3>
+                <button class="icon-btn" id="nextMonth">→</button>
+              </div>
+              <div class="calendar-weekdays">
+                <span>Sun</span>
+                <span>Mon</span>
+                <span>Tue</span>
+                <span>Wed</span>
+                <span>Thu</span>
+                <span>Fri</span>
+                <span>Sat</span>
+              </div>
+              <div id="calendarGrid" class="calendar-grid"></div>
+            </div>
+
+            <aside class="panel detail-panel" id="calendarDetail"></aside>
+          </div>
+        </section>
+
+        <section class="page" id="receipts-section">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">Receipts</p>
+              <h2>Digital records</h2>
+            </div>
+          </div>
+
+          <div class="section-hero">
+            <div class="section-copy">
+              <p class="eyebrow">Documentation</p>
+              <h3>Keep receipts, transfers, and payment evidence neatly organized.</h3>
+            </div>
+            <div class="section-visual">
+              <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=80" alt="Invoice and receipt documentation" />
+            </div>
+          </div>
+
+          <div id="receiptList" class="receipt-list"></div>
+        </section>
+
+        <section class="page" id="settings-section">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">Settings</p>
+              <h2>Property details</h2>
+            </div>
+          </div>
+
+          <div class="section-hero">
+            <div class="section-copy">
+              <p class="eyebrow">Control center</p>
+              <h3>Configure your brand, reminder timing, and cloud backup preferences.</h3>
+            </div>
+            <div class="section-visual">
+              <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=900&q=80" alt="Property management controls" />
+            </div>
+          </div>
+
+          <form id="settingsForm" class="settings-form panel">
+            <div class="form-grid two-col">
+              <div>
+                <label>Owner / admin name</label>
+                <input name="adminName" type="text" />
+              </div>
+
+              <div>
+                <label>Property / company name</label>
+                <input name="companyName" type="text" />
+              </div>
+
+              <div>
+                <label>Contact information</label>
+                <input name="contactInfo" type="text" />
+              </div>
+
+              <div>
+                <label>Default currency</label>
+                <select name="currency">
+                  <option value="INR">INR (₹)</option>
+                  <option value="USD">USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Default reminder lead time</label>
+                <input name="reminderDays" type="number" min="1" max="30" />
+              </div>
+
+              <div>
+                <label>Logo URL</label>
+                <input name="logoUrl" type="url" placeholder="https://..." />
+              </div>
+
+              <div>
+                <label>Google Drive Client ID</label>
+                <input name="googleDriveClientId" type="text" placeholder="Paste Google OAuth Client ID" />
+              </div>
+
+              <div>
+                <label>Drive folder ID (optional)</label>
+                <input name="googleDriveFolderId" type="text" placeholder="Optional folder ID for backups" />
+              </div>
+            </div>
+
+            <div class="backup-box">
+              <button type="button" class="secondary-btn" id="connectDriveBtn">Connect Drive</button>
+              <button type="button" class="secondary-btn" id="backupNowBtn">Backup now</button>
+              <button type="button" class="secondary-btn" id="restoreBackupBtn">Restore backup</button>
+              <span id="backupStatus">Local backup active</span>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="primary-btn">Save settings</button>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal hidden" id="tenantModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="tenantModalTitle">Add tenant</h3>
+          <button class="icon-btn close-modal" data-close="tenantModal">✕</button>
+        </div>
+
+        <form id="tenantForm" class="form-grid">
+          <input type="hidden" name="tenantId" />
+
+          <div>
+            <label>Full name</label>
+            <input name="name" type="text" required />
+          </div>
+
+          <div>
+            <label>Phone number</label>
+            <input name="phone" type="tel" required />
+          </div>
+
+          <div>
+            <label>Email</label>
+            <input name="email" type="email" />
+          </div>
+
+          <div>
+            <label>Property / room</label>
+            <select name="propertyId" id="tenantPropertySelect" required></select>
+          </div>
+
+          <div class="full-width">
+            <label>Address</label>
+            <input name="address" type="text" required />
+          </div>
+
+          <div>
+            <label>Monthly rent</label>
+            <input name="monthlyRent" type="number" min="0" required />
+          </div>
+
+          <div>
+            <label>Security deposit</label>
+            <input name="securityDeposit" type="number" min="0" />
+          </div>
+
+          <div>
+            <label>Joining date</label>
+            <input name="joinDate" type="date" required />
+          </div>
+
+          <div>
+            <label>Rent cycle (days)</label>
+            <select name="rentCycleDays">
+              <option value="30">30 Days</option>
+              <option value="31">31 Days</option>
+              <option value="45">45 Days</option>
+              <option value="60">60 Days</option>
+            </select>
+          </div>
+
+          <div class="full-width">
+            <label>Lease info</label>
+            <textarea name="leaseInfo" rows="3" placeholder="1-year lease, notice period, special terms..."></textarea>
+          </div>
+
+          <div class="form-actions full-width">
+            <button type="button" class="secondary-btn close-modal" data-close="tenantModal">Cancel</button>
+            <button type="submit" class="primary-btn">Save tenant</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="propertyModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="propertyModalTitle">Add property</h3>
+          <button class="icon-btn close-modal" data-close="propertyModal">✕</button>
+        </div>
+
+        <form id="propertyForm" class="form-grid">
+          <input type="hidden" name="propertyId" />
+
+          <div>
+            <label>Property name</label>
+            <input name="name" type="text" required />
+          </div>
+
+          <div>
+            <label>Unit / room</label>
+            <input name="unitNumber" type="text" placeholder="A-204" required />
+          </div>
+
+          <div class="full-width">
+            <label>Address</label>
+            <input name="address" type="text" required />
+          </div>
+
+          <div>
+            <label>Monthly rent</label>
+            <input name="baseRent" type="number" min="0" required />
+          </div>
+
+          <div>
+            <label>Status</label>
+            <select name="status">
+              <option value="Vacant">Vacant</option>
+              <option value="Occupied">Occupied</option>
+              <option value="Maintenance">Maintenance</option>
+            </select>
+          </div>
+
+          <div class="full-width">
+            <label>Notes</label>
+            <textarea name="notes" rows="3" placeholder="Detailed description or property notes"></textarea>
+          </div>
+
+          <div class="form-actions full-width">
+            <button type="button" class="secondary-btn close-modal" data-close="propertyModal">Cancel</button>
+            <button type="submit" class="primary-btn">Save property</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="paymentModal">
+      <div class="modal-card small-card">
+        <div class="modal-header">
+          <h3>Record payment</h3>
+          <button class="icon-btn close-modal" data-close="paymentModal">✕</button>
+        </div>
+
+        <form id="paymentForm" class="form-grid">
+          <div class="full-width">
+            <label>Tenant</label>
+            <select name="tenantId" id="paymentTenantSelect" required></select>
+          </div>
+
+          <div>
+            <label>Amount</label>
+            <input name="amount" type="number" min="0" required />
+          </div>
+
+          <div>
+            <label>Payment date</label>
+            <input name="paymentDate" type="date" required />
+          </div>
+
+          <div>
+            <label>Payment method</label>
+            <select name="method">
+              <option value="Cash">Cash</option>
+              <option value="UPI">UPI</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Rent month</label>
+            <input name="rentMonth" type="text" placeholder="September 2026" required />
+          </div>
+
+          <div class="full-width">
+            <label>Note</label>
+            <textarea name="note" rows="2" placeholder="Optional message"></textarea>
+          </div>
+
+          <div class="form-actions full-width">
+            <button type="button" class="secondary-btn close-modal" data-close="paymentModal">Cancel</button>
+            <button type="submit" class="primary-btn">Save payment</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="receiptModal">
+      <div class="modal-card receipt-modal-card">
+        <div class="modal-header">
+          <h3>Rent receipt</h3>
+          <button class="icon-btn close-modal" data-close="receiptModal">✕</button>
+        </div>
+        <div id="receiptPreview" class="receipt-preview"></div>
+        <div class="form-actions">
+          <button class="secondary-btn" id="downloadReceiptBtn">Download PDF</button>
+          <button class="primary-btn" id="printReceiptBtn">Print</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="confirm-dialog hidden" id="confirmDialog" role="dialog" aria-modal="true">
+      <div class="confirm-card">
+        <h3>Confirm action</h3>
+        <p id="confirmMessage">Are you sure?</p>
+        <div class="form-actions">
+          <button class="secondary-btn" id="cancelConfirmBtn">Cancel</button>
+          <button class="danger-btn" id="confirmActionBtn">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast hidden" id="toast"></div>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="app.js"></script>
+  </body>
+</html>
